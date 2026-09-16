@@ -1,0 +1,13 @@
+:root { color-scheme: light dark; --accent: #6f5cff; --muted: #6b7280; }
+* { box-sizing: border-box; }
+body { font: 17px/1.6 system-ui, sans-serif; margin: 0; }
+header, main, footer { max-width: 760px; margin: auto; padding: 1.25rem; }
+header { font-weight: 700; border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent); }
+header a, h1, h2 { color: inherit; }
+a { color: var(--accent); }
+h1 { font-size: clamp(2rem, 7vw, 3.5rem); line-height: 1.05; }
+h2 { line-height: 1.2; }
+.card { padding: 1.5rem 0; border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent); }
+.product { color: var(--accent); font-size: .8rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.date, footer { color: var(--muted); }
+

@@ -1,0 +1,21 @@
+title: FullDive release notes
+description: Public release notes for FullDive products
+url: https://fulldivevr.github.io
+baseurl: /release-notes
+theme: minima
+collections:
+  releases:
+    output: true
+    permalink: /:collection/:path/
+defaults:
+  - scope:
+      path: ""
+      type: releases
+    values:
+      layout: release
+exclude:
+  - scripts
+  - vendor
+  - README.md
+  - AGENTS.md
+

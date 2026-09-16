@@ -1,0 +1,82 @@
+name: Prepare release notes
+on:
+  workflow_call:
+    inputs:
+      product:
+        required: true
+        type: string
+      source_repositories:
+        required: true
+        type: string
+      days:
+        default: 7
+        type: number
+    secrets:
+      OPENROUTER_API_KEY:
+        required: true
+      RELEASE_NOTES_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release notes
+        uses: actions/checkout@v4
+        with:
+          repository: fulldiveVR/release-notes
+          token: ${{ secrets.RELEASE_NOTES_TOKEN }}
+          path: release-notes
+
+      - name: Collect source history
+        id: history
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_NOTES_TOKEN }}
+          SOURCE_REPOSITORIES: ${{ inputs.source_repositories }}
+          DAYS: ${{ inputs.days }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          since="$(date -u -d "$DAYS days ago" +%Y-%m-%dT%H:%M:%SZ)"
+          : > history.jsonl
+          while IFS= read -r repository; do
+            test -n "$repository" || continue
+            gh api --paginate "repos/$repository/commits?since=$since&per_page=100" \
+              --jq '.[] | {repository: "'"$repository"'", date: .commit.author.date, message: .commit.message}' \
+              >> history.jsonl
+          done <<< "$SOURCE_REPOSITORIES"
+          test -s history.jsonl || echo '{"no_changes":true}' > history.jsonl
+
+      - name: Draft public note with Luna
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          PRODUCT: ${{ inputs.product }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 release-notes/scripts/prepare.py \
+            --product "$PRODUCT" \
+            --history history.jsonl \
+            --output release-notes
+
+      - name: Validate draft
+        run: python3 release-notes/scripts/validate.py
+
+      - name: Open or update review pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          path: release-notes
+          token: ${{ secrets.RELEASE_NOTES_TOKEN }}
+          branch: automation/${{ inputs.product }}-weekly
+          delete-branch: true
+          commit-message: "docs(${{ inputs.product }}): prepare weekly release notes"
+          title: "${{ inputs.product }}: weekly release notes draft"
+          body: |
+            Luna-generated draft from private source history.
+
+            Review every claim and remove internal details before merging. Validation blocks private repository links, commit hashes, and secret-like values.
+          labels: automated,release-notes
+

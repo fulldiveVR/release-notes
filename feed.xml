@@ -1,0 +1,22 @@
+---
+layout: null
+---
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ site.title | xml_escape }}</title>
+  <link href="{{ '/feed.xml' | absolute_url }}" rel="self"/>
+  <link href="{{ '/' | absolute_url }}"/>
+  <updated>{{ site.time | date_to_xmlschema }}</updated>
+  <id>{{ '/' | absolute_url }}</id>
+  {% assign releases = site.releases | sort: "date" | reverse %}
+  {% for release in releases limit:25 %}
+  <entry>
+    <title>{{ release.product_name | xml_escape }}: {{ release.title | xml_escape }}</title>
+    <link href="{{ release.url | absolute_url }}"/>
+    <updated>{{ release.date | date_to_xmlschema }}</updated>
+    <id>{{ release.url | absolute_url }}</id>
+    <summary>{{ release.summary | xml_escape }}</summary>
+  </entry>
+  {% endfor %}
+</feed>
+

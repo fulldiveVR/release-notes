@@ -1,0 +1,17 @@
+- id: roomcord
+  name: Roomcord
+  description: Communication and collaboration for communities and teams.
+  sources:
+    - fulldiveVR/wizeup-rooms
+    - fulldiveVR/wizeup-rooms-api
+- id: autoworker-hub
+  name: Autoworker Hub
+  description: Hosting and control plane for multi-tenant AI runtimes.
+  sources:
+    - jetcalls/autoworker-hub
+- id: hermes-hub
+  name: Hermes Hub
+  description: Hosted runtime and automation platform.
+  sources:
+    - jetcalls/hermes-hub
+
