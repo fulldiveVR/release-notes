@@ -1,10 +1,19 @@
 ---
 layout: default
 ---
-<article>
-  <p class="product"><a href="{{ '/' | append: page.product | append: '/' | relative_url }}">{{ page.product_name }}</a></p>
-  <h1>{{ page.title }}</h1>
-  <p class="date"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time>{% if page.version %} · {{ page.version }}{% endif %}</p>
-  {{ content }}
-</article>
-
+<section class="detail-hero">
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <div class="shell narrow">
+    <a class="back-link" href="{{ '/' | append: page.product | append: '/' | relative_url }}">← All {{ page.product_name }} updates</a>
+    <p class="eyebrow"><span></span>{{ page.product_name }} release notes</p>
+    <h1>{{ page.title }}</h1>
+    <p class="hero-lede">{{ page.summary }}</p>
+    <div class="release-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time>
+      {% if page.version %}<span>{{ page.version }}</span>{% endif %}
+    </div>
+  </div>
+</section>
+<section class="detail-body">
+  <article class="shell prose">{{ content }}</article>
+</section>
