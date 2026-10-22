@@ -26,7 +26,7 @@ Merges to `main` publish the site through GitHub Pages.
 Source repositories are private, so their default `GITHUB_TOKEN` cannot write here. Automated submissions should use a GitHub App installed only on the source repositories and this repository, with:
 
 - source repositories: Metadata read and Contents read;
-- this repository: Metadata read, Contents write, and Pull requests write.
+- this repository: Metadata read and Contents write.
 
-The app should open a pull request. Human review remains the publication boundary.
+The weekly job commits the generated note straight to `main`, which publishes it. `scripts/validate.py` is the only gate.
 

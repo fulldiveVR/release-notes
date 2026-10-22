@@ -65,18 +65,23 @@ jobs:
       - name: Validate draft
         run: python3 release-notes/scripts/validate.py
 
-      - name: Open or update review pull request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          path: release-notes
-          token: ${{ secrets.RELEASE_NOTES_TOKEN }}
-          branch: automation/${{ inputs.product }}-weekly
-          delete-branch: true
-          commit-message: "docs(${{ inputs.product }}): prepare weekly release notes"
-          title: "${{ inputs.product }}: weekly release notes draft"
-          body: |
-            Luna-generated draft from private source history.
-
-            Review every claim and remove internal details before merging. Validation blocks private repository links, commit hashes, and secret-like values.
-          labels: automated,release-notes
-
+      - name: Publish to main
+        working-directory: release-notes
+        env:
+          PRODUCT: ${{ inputs.product }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add _releases
+          if git diff --cached --quiet; then
+            echo "No release note to publish"
+            exit 0
+          fi
+          git config user.name "release-notes-bot"
+          git config user.email "release-notes-bot@users.noreply.github.com"
+          git commit -m "docs($PRODUCT): weekly release notes"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep $((attempt * 5))
+          done
+          exit 1
